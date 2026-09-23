@@ -299,6 +299,27 @@ html, body {
 }
 /* 좁은 게임판 크기와 관계없이 안내와 시작 버튼을 볼 수 있다. */
 @media (max-width: 819px), (max-aspect-ratio: 1/1) {
+  .made-list { align-items: center; }
+  .made-slot { min-width: 52px; height: 30px; font-size: 16px; }
+  .made-item {
+    height: 30px;
+    gap: 4px;
+    padding: 3px 6px;
+    border-radius: 9px;
+    white-space: nowrap;
+  }
+  .made-item .e { font-size: 16px; line-height: 1; }
+  .made-item b { font-size: 16px; line-height: 1.2; letter-spacing: 0; }
+  .made-item .seal {
+    position: static;
+    flex: none;
+    padding: 1px 2px;
+    border-width: 1px;
+    font-size: 9px;
+    line-height: 1.2;
+    transform: none;
+  }
+  .made-item.new .seal { animation: none; }
   .overlay {
     position: fixed;
     z-index: 10;
