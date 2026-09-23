@@ -31,7 +31,7 @@ html, body {
   flex-direction: column;
   max-width: 720px;
   margin: 0 auto;
-  padding: 10px 12px 12px;
+  padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 .side { flex: none; }
 
@@ -213,12 +213,12 @@ html, body {
 /* 게임판: board-wrap 이 남은 공간, board 는 그 안에 비율을 지켜 가장 크게 (크기는 game.js 가 정한다) */
 .board-wrap {
   flex: 1;
-  min-height: 0;
+  min-height: 180px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
 }
-.board { position: relative; width: 100%; aspect-ratio: 480 / 560; }
+.board { position: relative; flex: none; width: 100%; aspect-ratio: 480 / 560; }
 #board {
   display: block;
   width: 100%;
@@ -278,6 +278,36 @@ html, body {
   cursor: pointer;
 }
 .pad button:active { background: var(--line); }
+/* 작은 세로 화면에서도 게임판과 방향 버튼에 공간을 남긴다. */
+@media (max-width: 819px) and (max-height: 780px) {
+  .brand { padding-bottom: 6px; }
+  .brand-char { width: 32px; }
+  .hud, .panel, .collection { margin-bottom: 6px; }
+  .stat { padding: 3px 4px; }
+  .panel { padding: 7px 10px; }
+  .emoji { font-size: 32px; }
+  .syl { width: 46px; height: 46px; font-size: 30px; }
+  .formula { margin-top: 6px; min-height: 52px; }
+  .part { min-width: 48px; padding: 3px 4px; }
+  .part b { font-size: 23px; }
+  .tip { margin-top: 6px; font-size: 12px; }
+  .collection { padding: 3px 8px; }
+  .made-list { padding-top: 4px; }
+  .made-slot { height: 30px; }
+  .pad { margin-top: 6px; }
+  .pad button { height: 48px; }
+}
+/* 좁은 게임판 크기와 관계없이 안내와 시작 버튼을 볼 수 있다. */
+@media (max-width: 819px), (max-aspect-ratio: 1/1) {
+  .overlay {
+    position: fixed;
+    z-index: 10;
+    border-radius: 0;
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    overflow-y: auto;
+  }
+  .card { width: 100%; min-width: 0; max-height: 100%; overflow-y: auto; }
+}
 @media (hover: hover) and (pointer: fine) {
   .pad { display: none; }
 }
@@ -301,6 +331,7 @@ html, body {
   /* 게임판 칸은 "화면 높이에 맞춘 폭"만큼만 잡아 패널 옆에 붙인다. 폭이 모자라면 줄어든다 */
   .board-wrap {
     flex: 0 1 calc((100dvh - 32px) * 480 / 560);
+    min-height: 0;
     min-width: 0;
     align-self: stretch; /* 게임판 크기는 이 칸의 높이로 정한다 — 내용에 맞춰 줄면 안 된다 */
     align-items: center;

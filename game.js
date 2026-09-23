@@ -110,7 +110,7 @@
   // 남은 공간 안에서 비율(480:560)을 지키며 가장 크게. 좌표계는 늘 W×H 로 두고 배율만 바꾼다
   function setupCanvas() {
     const r = wrap.getBoundingClientRect();
-    const w = Math.max(240, Math.min(r.width, (r.height * W) / H));
+    const w = Math.max(0, Math.min(r.width, (r.height * W) / H));
     const h = (w * H) / W;
     box.style.width = `${w}px`;
     box.style.height = `${h}px`;
