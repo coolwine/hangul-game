@@ -5,10 +5,11 @@
   const STAGES = window.STAGES;
 
   // ---------- 상수 ----------
-  const W = 480, H = 560;
+  const W = 480, BASE_H = 560;
+  let H = BASE_H;
   const LANES = 6, LANE_W = W / LANES;
   const TILE = 50;
-  const TRAY_Y = H - 52; // 받침대 윗면
+  let TRAY_Y = H - 52; // 화면 높이에 맞춘 받침대 윗면
   const CHAR_H = 84; // 위에서 글자를 떨어뜨리는 해달 캐릭터 높이
   const CHAR_TOP = 18; // 폴짝 뛰어도(최대 16) 위가 잘리지 않을 여백
   const PENCIL_H = 24; // 받침대(연필) 두께
@@ -107,11 +108,20 @@
   const ctx = canvas.getContext('2d');
   const wrap = $('board-wrap');
   const box = $('board-box');
-  // 남은 공간 안에서 비율(480:560)을 지키며 가장 크게. 좌표계는 늘 W×H 로 두고 배율만 바꾼다
+  // 모바일은 패널 너비를 채우고 논리 높이를 조절해 그림의 비율을 유지한다.
+  const desktopLayout = window.matchMedia('(min-width: 820px) and (min-aspect-ratio: 1/1)');
   function setupCanvas() {
     const r = wrap.getBoundingClientRect();
-    const w = Math.max(0, Math.min(r.width, (r.height * W) / H));
-    const h = (w * H) / W;
+    if (r.width <= 0 || r.height <= 0) return;
+    const w = desktopLayout.matches ? Math.min(r.width, (r.height * W) / BASE_H) : r.width;
+    const h = desktopLayout.matches ? (w * BASE_H) / W : r.height;
+    const previousTray = TRAY_Y;
+    H = h * W / w;
+    TRAY_Y = H - 52;
+    // 화면 회전이나 안내문 줄바꿈 뒤에도 블록의 낙하 진행률을 보존한다.
+    for (const tile of game.tiles) {
+      tile.y = DROP_Y + (tile.y - DROP_Y) * (TRAY_Y - DROP_Y) / (previousTray - DROP_Y);
+    }
     box.style.width = `${w}px`;
     box.style.height = `${h}px`;
     document.documentElement.style.setProperty('--board-h', `${h}px`);
@@ -121,9 +131,6 @@
     const k = canvas.width / W;
     ctx.setTransform(k, 0, 0, k, 0, 0);
   }
-  setupCanvas();
-  if ('ResizeObserver' in window) new ResizeObserver(setupCanvas).observe(wrap);
-  else window.addEventListener('resize', setupCanvas);
 
   // ---------- 상태 ----------
   const game = {
@@ -545,7 +552,7 @@
       if (game.spawnTimer <= 0 && spawn()) game.spawnTimer = spawnInterval();
     }
 
-    const speed = fallSpeed();
+    const speed = fallSpeed() * (TRAY_Y - TILE / 2 - DROP_Y) / (BASE_H - 52 - TILE / 2 - DROP_Y);
     for (const t of game.tiles) {
       t.y += speed * dt;
       t.spin += dt;
@@ -880,6 +887,9 @@
     fitRow(document.querySelector('.target'));
     fitRow($('formula'));
   });
+  setupCanvas();
+  if ('ResizeObserver' in window) new ResizeObserver(setupCanvas).observe(wrap);
+  else window.addEventListener('resize', setupCanvas);
   requestAnimationFrame(frame);
 
   // index.html?debug 로 열면 콘솔에서 상태를 볼 수 있다 (자동 테스트용)

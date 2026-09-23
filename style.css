@@ -210,10 +210,10 @@ html, body {
   100% { transform: rotate(12deg) scale(1); opacity: 1; }
 }
 
-/* 게임판: board-wrap 이 남은 공간, board 는 그 안에 비율을 지켜 가장 크게 (크기는 game.js 가 정한다) */
+/* 모바일 게임판은 패널 너비와 남은 높이를 채운다 (크기는 game.js 가 정한다). */
 .board-wrap {
   flex: 1;
-  min-height: 180px;
+  min-height: max(180px, calc((min(100vw, 720px) - 24px) * 0.75));
   display: flex;
   align-items: flex-start;
   justify-content: center;
