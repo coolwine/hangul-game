@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>뚝딱! 한글</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main id="app">
+    <aside class="side">
+    <header class="brand">
+      <img class="brand-char" src="assets/char-haedal.png" alt="" />
+      <div class="brand-text">
+        <h1 class="logo"><span class="logo-pop">뚝딱!</span> 한글</h1>
+        <p class="brand-sub">2026 한글날 코딩 프로젝트</p>
+      </div>
+      <div class="hud-buttons">
+        <button id="btn-mute" class="icon-btn" title="소리 켜기/끄기">🔊</button>
+        <button id="btn-pause" class="icon-btn" title="일시정지 (P)">⏸</button>
+      </div>
+    </header>
+
+    <section class="hud">
+      <div class="stat"><span class="label">단계</span><b id="stage">1단계</b></div>
+      <div class="stat"><span class="label">점수</span><b id="score">0</b></div>
+      <div class="stat"><span class="label">최고</span><b id="best">0</b></div>
+      <div class="stat stat-hearts"><span class="label">목숨</span><b id="hearts" class="hearts"></b></div>
+    </section>
+
+    <section class="panel">
+      <div class="target">
+        <span id="target-emoji" class="emoji">🌳</span>
+        <div id="target-word" class="word"></div>
+      </div>
+      <div id="formula" class="formula"></div>
+      <p id="tip" class="tip"></p>
+    </section>
+
+    <section class="collection">
+      <h3>내가 만든 글자 <span id="made-count" class="count">0</span></h3>
+      <div id="made-list" class="made-list"></div>
+    </section>
+    </aside>
+
+    <div class="board-wrap" id="board-wrap">
+      <div class="board" id="board-box">
+      <canvas id="board"></canvas>
+
+      <div id="ov-title" class="overlay">
+        <div class="card">
+          <h1>뚝딱! 한글</h1>
+          <p class="sub">해달이가 뚝! 떨어뜨린 자음·모음을 연필로 딱! 받아 글자를 뚝딱 만들어요!</p>
+          <ul class="howto">
+            <li><span class="chip c">ㄱ</span> 파란 블록은 <b>자음</b></li>
+            <li><span class="chip v">ㅏ</span> 주황 블록은 <b>모음</b></li>
+            <li>순서대로 받아요: <b>첫소리 → 가운뎃소리 → 끝소리</b></li>
+            <li>ㄱ + ㅏ + ㅇ = <b>강</b></li>
+          </ul>
+          <p class="keys">← → 방향키 · 화면을 누르거나 끌기 · P 일시정지</p>
+          <button id="btn-start" class="primary">시작하기</button>
+        </div>
+      </div>
+
+      <div id="ov-pause" class="overlay hidden">
+        <div class="card">
+          <h2>잠깐 쉬어요</h2>
+          <button id="btn-resume" class="primary">계속하기</button>
+        </div>
+      </div>
+
+      <div id="ov-stage" class="overlay hidden">
+        <div class="card">
+          <h2 id="stage-clear-title">1단계 완료!</h2>
+          <p id="stage-clear-desc" class="sub"></p>
+          <div id="stage-made" class="made"></div>
+          <button id="btn-next" class="primary">다음 단계</button>
+        </div>
+      </div>
+
+      <div id="ov-over" class="overlay hidden">
+        <div class="card">
+          <h2>게임 끝!</h2>
+          <p class="sub">점수 <b id="final-score">0</b><span id="new-best" class="badge hidden">최고 기록!</span></p>
+          <p class="sub">내가 만든 글자</p>
+          <div id="over-made" class="made"></div>
+          <button id="btn-retry" class="primary">다시 하기</button>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <nav class="pad">
+      <button id="btn-left" aria-label="왼쪽">◀</button>
+      <button id="btn-right" aria-label="오른쪽">▶</button>
+    </nav>
+  </main>
+
+  <script src="hangul.js"></script>
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

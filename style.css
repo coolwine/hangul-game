@@ -1,0 +1,354 @@
+:root {
+  --bg: #f6efe1;
+  --paper: #fffaf0;
+  --ink: #3a2e22;
+  --muted: #8a7a66;
+  --line: #e2d5bd;
+  --cons: #3b6fd8;
+  --vowel: #f08a3c;
+  --good: #2a9d5c;
+  --bad: #d64545;
+  --accent: #b8412c;
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* 세로 화면(모바일): 위에 패널, 아래 게임판이 남은 높이를 채운다 */
+#app {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10px 12px 12px;
+}
+.side { flex: none; }
+
+/* 로고 */
+.brand {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 2px 8px;
+}
+.brand-char { width: 38px; height: auto; flex: none; }
+.brand-text { min-width: 0; }
+.logo {
+  margin: 0;
+  font-size: 22px; font-weight: 900; line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+.logo-pop { color: var(--accent); display: inline-block; transform: rotate(-4deg); }
+.brand-sub { display: none; margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+.hud-buttons { margin-left: auto; display: flex; gap: 6px; }
+.icon-btn {
+  width: 36px; height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 점수판: 칩 네 개 */
+.hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.9fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.stat {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 5px 4px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  line-height: 1.15;
+  white-space: nowrap;
+  min-width: 0;
+}
+.stat .label { font-size: 11px; color: var(--muted); }
+.stat b { font-size: 18px; }
+.stat b.hearts { font-size: 14px; letter-spacing: 0; }
+
+/* 조립 패널 */
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.target { display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
+.emoji { font-size: 40px; }
+.word { display: flex; gap: 6px; }
+.syl {
+  flex: none;
+  position: relative;
+  width: 58px; height: 58px;
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 38px; font-weight: 800;
+}
+.syl .ghost { position: absolute; color: #e9dfcc; }
+.syl.building .ghost { top: 3px; right: 5px; font-size: .3em; line-height: 1; color: var(--muted); opacity: .7; }
+.syl .now { position: relative; color: var(--ink); }
+.syl.current { border-color: var(--accent); border-style: solid; }
+.syl.done { border-style: solid; border-color: var(--good); background: #eef8f1; }
+.syl.done .now { color: var(--good); }
+
+.formula {
+  display: flex; align-items: center; justify-content: center; flex-wrap: nowrap;
+  gap: 6px; margin-top: 10px; min-height: 64px;
+}
+.part {
+  flex: none;
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 58px; padding: 4px 6px;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  opacity: .45;
+}
+.part b { font-size: 26px; line-height: 1.2; }
+.part small { font-size: 10px; color: var(--muted); white-space: nowrap; }
+.part.c b { color: var(--cons); }
+.part.v b { color: var(--vowel); }
+.part.filled { opacity: 1; background: #fff; }
+.part.current { opacity: 1; border-color: var(--accent); animation: pulse 1s infinite; }
+.part.result { opacity: 1; border-color: var(--ink); }
+.op { font-size: 20px; color: var(--muted); font-weight: 700; }
+@keyframes pulse { 50% { transform: scale(1.06); } }
+
+.tip {
+  margin: 8px 0 0; min-height: 2.6em;
+  font-size: 13px; line-height: 1.35; text-align: center;
+  color: var(--muted);
+}
+.tip.bad { color: var(--bad); font-weight: 700; }
+.tip.good { color: var(--good); font-weight: 700; }
+
+/* 내가 만든 글자 보관함 */
+.collection {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 8px 12px 10px;
+  margin-bottom: 10px;
+}
+.collection h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.count {
+  background: var(--good); color: #fff;
+  border-radius: 999px; padding: 0 7px;
+  font-size: 12px; line-height: 18px;
+}
+/* 세로 화면: 제목과 목록을 한 줄에, 목록은 옆으로 넘긴다 (게임판 높이를 뺏지 않게) */
+.collection { display: flex; align-items: center; gap: 10px; padding: 6px 10px; }
+.collection h3 { flex: none; margin: 0; flex-direction: column; gap: 2px; font-size: 12px; }
+.made-list {
+  flex: 1; min-width: 0;
+  display: flex; gap: 8px;
+  overflow-x: auto; overflow-y: hidden;
+  padding: 8px 8px 4px 2px;
+}
+.tip { min-height: 1.4em; }
+.made-slot {
+  flex: none;
+  display: grid; place-items: center;
+  min-width: 64px; height: 36px;
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  color: var(--line); font-size: 18px; font-weight: 800;
+}
+.made-item {
+  flex: none;
+  position: relative;
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px 5px 8px;
+  border: 2px solid var(--good);
+  border-radius: 12px;
+  background: #eef8f1;
+}
+.made-item .e { font-size: 20px; }
+.made-item b { font-size: 20px; color: var(--good); letter-spacing: 1px; }
+/* 완성 도장 */
+.made-item .seal {
+  position: absolute; top: -7px; right: -7px;
+  padding: 1px 4px;
+  border: 2px solid var(--accent); border-radius: 5px;
+  background: var(--paper);
+  color: var(--accent);
+  font-size: 10px; font-weight: 800;
+  transform: rotate(12deg);
+}
+.made-item.new { animation: pop .45s ease-out; }
+.made-item.new .seal { animation: stamp .5s .25s ease-out both; }
+@keyframes pop {
+  0% { transform: scale(.4); opacity: 0; }
+  70% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes stamp {
+  0% { transform: rotate(12deg) scale(3); opacity: 0; }
+  60% { transform: rotate(12deg) scale(.9); opacity: 1; }
+  100% { transform: rotate(12deg) scale(1); opacity: 1; }
+}
+
+/* 게임판: board-wrap 이 남은 공간, board 는 그 안에 비율을 지켜 가장 크게 (크기는 game.js 가 정한다) */
+.board-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.board { position: relative; width: 100%; aspect-ratio: 480 / 560; }
+#board {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  touch-action: none;
+}
+
+.overlay {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(58, 46, 34, .35);
+  border-radius: 16px;
+  padding: 16px;
+}
+.overlay.hidden, .hidden { display: none; }
+.card {
+  background: var(--paper);
+  border-radius: 18px;
+  padding: 20px 22px;
+  text-align: center;
+  max-width: 360px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+}
+.card h1 { margin: 0 0 6px; font-size: 28px; color: var(--accent); }
+.card h2 { margin: 0 0 8px; font-size: 22px; }
+.sub { margin: 4px 0 10px; color: var(--muted); font-size: 14px; }
+.howto { list-style: none; padding: 0; margin: 12px 0; text-align: left; font-size: 14px; line-height: 2; }
+.chip {
+  display: inline-grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 6px;
+  color: #fff; font-weight: 800; margin-right: 4px;
+}
+.chip.c { background: var(--cons); }
+.chip.v { background: var(--vowel); }
+.keys { font-size: 12px; color: var(--muted); }
+.primary {
+  margin-top: 8px;
+  padding: 12px 28px;
+  border: 0; border-radius: 12px;
+  background: var(--accent); color: #fff;
+  font-size: 17px; font-weight: 700;
+  cursor: pointer;
+}
+.primary:active { transform: translateY(1px); }
+.made { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 6px 0 10px; max-height: 120px; overflow: auto; }
+.made span { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 3px 8px; font-size: 14px; }
+.badge { margin-left: 8px; background: var(--good); color: #fff; font-size: 12px; padding: 2px 6px; border-radius: 6px; }
+
+/* 모바일 방향 버튼 */
+.pad { flex: none; display: flex; gap: 10px; margin-top: 10px; }
+.pad button {
+  flex: 1; height: 56px;
+  border: 1px solid var(--line); border-radius: 14px;
+  background: var(--paper); font-size: 22px; color: var(--ink);
+  cursor: pointer;
+}
+.pad button:active { background: var(--line); }
+@media (hover: hover) and (pointer: fine) {
+  .pad { display: none; }
+}
+
+.shake { animation: shake .3s; }
+@keyframes shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* 가로로 넓은 화면(PC·발표): 왼쪽 패널, 오른쪽 게임판을 세로 가득 */
+@media (min-width: 820px) and (min-aspect-ratio: 1/1) {
+  #app {
+    max-width: none;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px 24px;
+  }
+  /* 게임판 칸은 "화면 높이에 맞춘 폭"만큼만 잡아 패널 옆에 붙인다. 폭이 모자라면 줄어든다 */
+  .board-wrap {
+    flex: 0 1 calc((100dvh - 32px) * 480 / 560);
+    min-width: 0;
+    align-self: stretch; /* 게임판 크기는 이 칸의 높이로 정한다 — 내용에 맞춰 줄면 안 된다 */
+    align-items: center;
+  }
+  .side {
+    flex: none;
+    width: clamp(320px, 32vw, 520px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  #app { align-items: center; }
+  /* 왼쪽 열 높이 = 게임판 높이 (game.js 가 --board-h 를 넣는다). 남는 높이는 보관함이 채운다 */
+  .side { height: var(--board-h, auto); justify-content: flex-start; }
+  .brand { padding-bottom: 12px; gap: 12px; }
+  .brand-char { width: clamp(48px, 5vw, 72px); }
+  .logo { font-size: clamp(28px, 3vw, 40px); }
+  .brand-sub { display: block; font-size: 13px; }
+  .stat { padding: 8px 4px; border-radius: 14px; }
+  .stat .label { font-size: 12px; }
+  .stat b { font-size: clamp(18px, 1.9vw, 24px); }
+  .stat b.hearts { font-size: clamp(13px, 1.4vw, 18px); }
+  .collection { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-bottom: 0; }
+  .panel { padding: 18px 14px; }
+  .target { justify-content: center; }
+  .emoji { font-size: clamp(40px, 4.5vw, 64px); }
+  .syl { width: clamp(62px, 6.5vw, 88px); height: clamp(62px, 6.5vw, 88px); font-size: clamp(42px, 4.4vw, 60px); }
+  .formula { gap: 8px; margin-top: 18px; }
+  .part { min-width: clamp(52px, 4.6vw, 78px); padding: 5px 6px; }
+  .part b { font-size: clamp(26px, 2.6vw, 38px); }
+  .part small { font-size: 12px; }
+  .op { font-size: clamp(18px, 1.8vw, 26px); }
+  .tip { font-size: 16px; min-height: 3em; margin-top: 14px; }
+  /* 가로 화면: 패널 아래 빈 공간에 카드로 쌓는다 */
+  .collection { padding: 12px 14px 14px; align-items: stretch; }
+  .collection h3 { font-size: 15px; margin-bottom: 10px; flex-direction: row; gap: 6px; }
+  .made-slot { min-width: 96px; height: 48px; font-size: 22px; }
+  .made-list {
+    flex-wrap: wrap;
+    overflow-x: hidden; overflow-y: auto;
+    flex: 1; min-height: 0; align-content: flex-start;
+    gap: 10px;
+    padding: 8px 6px 6px;
+  }
+  .made-item { padding: 7px 14px 7px 10px; }
+  .made-item .e { font-size: 26px; }
+  .made-item b { font-size: clamp(22px, 2.2vw, 30px); }
+  .card h1 { font-size: 36px; }
+  .card { max-width: 440px; padding: 26px 28px; }
+  .howto { font-size: 16px; }
+}
