@@ -446,7 +446,8 @@
   }
 
   function contextTip() {
-    if (!game.word) return '';
+    // 단어를 다 만든 뒤(축하·단계 완료 창)에는 받을 자모가 없다 — sylIdx 가 단어 끝을 넘어가 있다
+    if (!game.word || game.sylIdx >= game.word.syllables.length) return '';
     const n = need();
     if (n.role === 'cho' && n.jamo === 'ㅇ' && stage().showNext) {
       return '첫소리 ㅇ 은 소리가 나지 않아요. 자리만 채워 주는 글자예요!';
@@ -813,11 +814,13 @@
 
   let last = performance.now();
   function frame(now) {
+    // 다음 프레임을 먼저 예약한다. update/draw 에서 예외가 나도 루프가 끊겨 게임 전체가 굳지 않게
+    // (예외 자체는 그대로 콘솔에 남는다)
+    requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     update(dt);
     draw(now);
-    requestAnimationFrame(frame);
   }
 
   // ---------- 입력 ----------
