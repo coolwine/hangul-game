@@ -70,23 +70,34 @@
   let audioCtx = null;
   let muted = store.get('hg-muted') === '1';
 
-  function tone(freq, dur, type = 'sine', when = 0, vol = 0.12) {
+  function tone(freq, dur, type = 'sine', when = 0, vol = 0.12, endFreq = null) {
     if (muted) return;
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
       const t = audioCtx.currentTime + when;
       const o = audioCtx.createOscillator();
       const g = audioCtx.createGain();
       o.type = type;
-      o.frequency.value = freq;
-      g.gain.setValueAtTime(vol, t);
+      o.frequency.setValueAtTime(freq, t);
+      if (endFreq !== null) o.frequency.exponentialRampToValueAtTime(endFreq, t + dur);
+      g.gain.setValueAtTime(endFreq === null ? vol : 0.001, t);
+      if (endFreq !== null) g.gain.linearRampToValueAtTime(vol, t + 0.005);
       g.gain.exponentialRampToValueAtTime(0.001, t + dur);
       o.connect(g).connect(audioCtx.destination);
       o.start(t);
       o.stop(t + dur);
     } catch { /* 오디오 미지원 */ }
   }
+  let lastMoveSound = -Infinity;
   const sfx = {
+    move(direction) {
+      const now = performance.now();
+      if (muted || now - lastMoveSound < 90) return;
+      lastMoveSound = now;
+      // 짧게 내려가는 "뽁" 소리. 빠르게 끌어도 소리가 겹치지 않게 한다.
+      tone(direction < 0 ? 620 : 700, 0.065, 'sine', 0, 0.045, direction < 0 ? 360 : 420);
+    },
     good() { tone(660, 0.12, 'triangle'); tone(880, 0.15, 'triangle', 0.07); },
     bad() { tone(170, 0.25, 'sawtooth', 0, 0.06); },
     word() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.2, 'triangle', i * 0.09)); },
@@ -824,9 +835,17 @@
   }
 
   // ---------- 입력 ----------
-  function move(d) {
+  function setLane(lane) {
     if (game.state !== 'play' && game.state !== 'celebrate') return;
-    player.lane = Math.max(0, Math.min(LANES - 1, player.lane + d));
+    const next = Math.max(0, Math.min(LANES - 1, lane));
+    if (next === player.lane) return;
+    const direction = next - player.lane;
+    player.lane = next;
+    sfx.move(direction);
+  }
+
+  function move(d) {
+    setLane(player.lane + d);
   }
 
   window.addEventListener('keydown', (e) => {
@@ -846,7 +865,7 @@
     if (game.state !== 'play' && game.state !== 'celebrate') return;
     const r = canvas.getBoundingClientRect();
     const x = ((e.clientX - r.left) / r.width) * W;
-    player.lane = Math.max(0, Math.min(LANES - 1, Math.floor(x / LANE_W)));
+    setLane(Math.floor(x / LANE_W));
   }
   canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); pointerLane(e); });
   canvas.addEventListener('pointermove', (e) => { if (e.buttons) pointerLane(e); });
